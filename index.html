@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#20242E;
+    --ink-2:#2B2F3B;
+    --paper:#EFE7D8;
+    --paper-2:#E6DCC8;
+    --paper-text:#2A2520;
+    --paper-muted:#73695A;
+    --border:#D2C6A8;
+    --amber:#C97A3D;
+    --amber-deep:#A85E28;
+    --sage:#5F7F64;
+    --rose:#A85A6C;
+    --slate:#4F6E89;
+    --font-display:'Fraunces', serif;
+    --font-body:'Inter', sans-serif;
+    --font-mono:'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--paper-text);
+    font-family:var(--font-body);
+    min-height:100vh;
+    padding:48px 20px 80px;
+  }
+  .wrap{max-width:640px;margin:0 auto;}
+  .masthead{text-align:center;margin-bottom:36px;color:var(--paper);}
+  .masthead .mark{
+    font-family:var(--font-mono);
+    letter-spacing:0.28em;
+    font-size:13px;
+    color:#C9BFA8;
+  }
+  .masthead h1{
+    font-family:var(--font-display);
+    font-weight:500;
+    font-size:34px;
+    margin:8px 0 6px;
+    color:var(--paper);
+  }
+  .masthead .tagline{
+    font-family:var(--font-display);
+    font-style:italic;
+    font-weight:400;
+    font-size:15px;
+    color:#A9A089;
+  }
+  .page{
+    background:var(--paper);
+    border-radius:6px;
+    border:1px solid var(--border);
+    box-shadow:0 18px 40px -16px rgba(0,0,0,0.5);
+    padding:36px 36px 32px;
+    position:relative;
+  }
+  @media (max-width:560px){ .page{padding:26px 20px 24px;} }
+  .step{display:none;}
+  .step.active{display:block;}
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:0.14em;
+    color:var(--paper-muted);
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  h2.entry-title{
+    font-family:var(--font-display);
+    font-weight:500;
+    font-size:24px;
+    margin:0 0 4px;
+  }
+  .section{margin-top:30px;}
+  .section:first-of-type{margin-top:0;}
+  .section-label{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--amber-deep);
+    border-bottom:1px solid var(--border);
+    padding-bottom:8px;
+    margin-bottom:16px;
+  }
+  label.field-label{
+    display:block;
+    font-size:14px;
+    font-weight:500;
+    margin-bottom:6px;
+    color:var(--paper-text);
+  }
+  .field-sub{
+    font-size:12px;
+    color:var(--paper-muted);
+    margin-top:-3px;
+    margin-bottom:6px;
+  }
+  .field{margin-bottom:18px;}
+  input[type=text], input[type=date], textarea, select{
+    width:100%;
+    font-family:var(--font-body);
+    font-size:14px;
+    padding:10px 12px;
+    border:1px solid var(--border);
+    border-radius:4px;
+    background:#FBF8F1;
+    color:var(--paper-text);
+  }
+  textarea{resize:vertical; min-height:48px;}
+  input:focus, textarea:focus, select:focus{
+    outline:2px solid var(--amber);
+    outline-offset:1px;
+  }
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:520px){ .grid-2{grid-template-columns:1fr;} }
+  .tag-no{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--paper-muted);
+    letter-spacing:0.08em;
+  }
+  .btn{
+    font-family:var(--font-mono);
+    font-size:13px;
+    letter-spacing:0.04em;
+    border:none;
+    border-radius:4px;
+    padding:13px 22px;
+    cursor:pointer;
+    background:var(--amber);
+    color:#FFF6EC;
+    transition:background .15s ease;
+  }
+  .btn:hover{background:var(--amber-deep);}
+  .btn:disabled{opacity:.5; cursor:not-allowed;}
+  .btn-ghost{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--paper-text);
+  }
+  .btn-ghost:hover{background:var(--paper-2);}
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;}
+  .submit-row{margin-top:30px; display:flex; justify-content:flex-end;}
+  .footer-link{
+    text-align:center;
+    margin-top:18px;
+  }
+  .footer-link button{
+    background:none;
+    border:none;
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:0.08em;
+    color:#7C7361;
+    text-decoration:underline;
+    cursor:pointer;
+  }
+  /* loading */
+  .loading-box{text-align:center; padding:50px 10px;}
+  .loading-box .spinner{
+    width:34px; height:34px; margin:0 auto 18px;
+    border:3px solid var(--border);
+    border-top-color:var(--amber);
+    border-radius:50%;
+    animation:spin 0.9s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce){ .loading-box .spinner{animation:none; border-top-color:var(--border);} }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading-box p{font-family:var(--font-display); font-style:italic; font-size:16px; color:var(--paper-muted);}
+  /* error */
+  .error-box{
+    border:1px solid #B5697A;
+    background:#F8E9EC;
+    color:#7A2F3F;
+    padding:16px;
+    border-radius:4px;
+    font-size:14px;
+    margin-bottom:16px;
+  }
+  /* recommendation cards */
+  .rec-card{
+    border:1px solid var(--border);
+    border-radius:4px;
+    padding:20px 20px 18px;
+    margin-bottom:18px;
+    position:relative;
+    background:#FBF8F1;
+  }
+  .rec-card.resolved{opacity:0.55;}
+  .stamp{
+    display:inline-block;
+    font-family:var(--font-mono);
+    font-size:10px;
+    letter-spacing:0.1em;
+    padding:3px 8px;
+    border-radius:3px;
+    border:1px solid currentColor;
+    transform:rotate(-2deg);
+    margin-bottom:10px;
+  }
+  .stamp.buy{color:var(--rose);}
+  .stamp.together{color:var(--sage);}
+  .stamp.for{color:var(--slate);}
+  .rec-card h3{
+    font-family:var(--font-display);
+    font-weight:500;
+    font-size:19px;
+    margin:0 0 6px;
+  }
+  .rec-card p.desc{font-size:14px; line-height:1.55; margin:0 0 10px;}
+  .rec-card p.why{
+    font-family:var(--font-display);
+    font-style:italic;
+    font-size:13px;
+    color:var(--paper-muted);
+    margin:0 0 14px;
+  }
+  .resolved-tag{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:0.08em;
+    color:var(--amber-deep);
+  }
+  .cta-link{
+    display:inline-block;
+    text-decoration:none;
+    margin-bottom:4px;
+  }
+  .cta-caption{
+    font-family:var(--font-mono);
+    font-size:10px;
+    color:var(--paper-muted);
+    margin-bottom:12px;
+  }
+  .calib-section-label{
+    font-family:var(--font-mono);
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--paper-muted);
+    margin:22px 0 10px;
+  }
+  .calib-section-label:first-child{margin-top:0;}
+  .calib-card{
+    border:1px solid var(--border);
+    border-radius:4px;
+    padding:14px 16px;
+    margin-bottom:10px;
+    background:#FBF8F1;
+  }
+  .calib-card.resolved{opacity:0.5;}
+  .calib-tag{
+    display:inline-block;
+    font-family:var(--font-mono);
+    font-size:10px;
+    color:var(--paper-muted);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:2px 8px;
+    margin-bottom:8px;
+  }
+  .calib-popular{
+    display:inline-block;
+    font-family:var(--font-mono);
+    font-size:10px;
+    color:var(--amber-deep);
+    margin-left:6px;
+  }
+  .calib-card h4{
+    font-family:var(--font-display);
+    font-weight:500;
+    font-size:16px;
+    margin:0 0 4px;
+  }
+  .calib-card p{font-size:13px; line-height:1.5; margin:0 0 10px; color:var(--paper-text);}
+  /* profile panel */
+  .profile-panel{
+    border-top:1px dashed var(--border);
+    margin-top:28px;
+    padding-top:20px;
+  }
+  .profile-summary{font-size:14px; line-height:1.6; margin:0 0 14px;}
+  .chips{display:flex; flex-wrap:wrap; gap:7px;}
+  .chip{
+    font-family:var(--font-mono);
+    font-size:11px;
+    padding:5px 10px;
+    border-radius:12px;
+    border:1px solid currentColor;
+  }
+  .chip.buy{color:var(--rose);}
+  .chip.together{color:var(--sage);}
+  .chip.for{color:var(--slate);}
+  .chip.general{color:var(--paper-muted);}
+
+  /* ===== LANDING PAGE ===== */
+  .marketing{max-width:980px; margin:0 auto; padding:0 24px 80px;}
+  .m-nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:28px 0 60px;
+  }
+  .m-nav .mark{
+    font-family:var(--font-mono); letter-spacing:0.24em; font-size:13px; color:var(--paper);
+  }
+  .m-nav-links{display:flex; gap:24px; align-items:center;}
+  .m-nav-links a{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:0.04em;
+    color:#A9A089; text-decoration:none;
+  }
+  .m-nav-links a:hover{color:var(--paper);}
+  .m-hero{
+    display:grid; grid-template-columns:1.1fr 1fr; gap:48px; align-items:center;
+    padding-bottom:90px;
+  }
+  @media (max-width:760px){ .m-hero{grid-template-columns:1fr;} }
+  .m-eyebrow{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:0.16em;
+    color:var(--amber); text-transform:uppercase; margin-bottom:14px;
+  }
+  .m-hero h1{
+    font-family:var(--font-display); font-weight:600; font-size:44px; line-height:1.12;
+    color:var(--paper); margin:0 0 18px;
+  }
+  @media (max-width:560px){ .m-hero h1{font-size:32px;} }
+  .m-hero p.m-sub{
+    font-size:16px; line-height:1.6; color:#C9BFA8; margin:0 0 28px; max-width:460px;
+  }
+  .m-hero-actions{display:flex; gap:16px; align-items:center; flex-wrap:wrap;}
+  .m-link-muted{
+    font-family:var(--font-mono); font-size:12px; color:#A9A089; text-decoration:none;
+  }
+  .m-card{
+    background:var(--paper); border-radius:8px; padding:24px 24px 20px;
+    box-shadow:0 24px 60px -20px rgba(0,0,0,0.55);
+  }
+  .m-card .stamp{margin-bottom:10px;}
+  .m-card h4{font-family:var(--font-display); font-weight:500; font-size:17px; margin:0 0 6px;}
+  .m-card p{font-size:13px; line-height:1.55; margin:0 0 8px; color:var(--paper-text);}
+  .m-card .why{font-family:var(--font-display); font-style:italic; font-size:12px; color:var(--paper-muted);}
+  .m-section{padding:70px 0; border-top:1px solid #3A3F4C;}
+  .m-section-eyebrow{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--amber); margin-bottom:10px;
+  }
+  .m-section h2{
+    font-family:var(--font-display); font-weight:500; font-size:30px; color:var(--paper); margin:0 0 36px;
+  }
+  .m-steps{display:grid; grid-template-columns:repeat(3,1fr); gap:28px;}
+  @media (max-width:700px){ .m-steps{grid-template-columns:1fr;} }
+  .m-step-no{
+    font-family:var(--font-mono); font-size:12px; color:var(--amber); margin-bottom:10px;
+  }
+  .m-step h3{font-family:var(--font-display); font-weight:500; font-size:18px; color:var(--paper); margin:0 0 8px;}
+  .m-step p{font-size:14px; line-height:1.6; color:#C9BFA8; margin:0;}
+  .m-testimonials{display:grid; grid-template-columns:repeat(3,1fr); gap:24px;}
+  @media (max-width:760px){ .m-testimonials{grid-template-columns:1fr;} }
+  .m-quote{
+    background:var(--ink-2); border:1px solid #3A3F4C; border-radius:8px; padding:22px;
+  }
+  .m-quote p{font-family:var(--font-display); font-style:italic; font-size:15px; line-height:1.6; color:var(--paper); margin:0 0 14px;}
+  .m-quote cite{font-family:var(--font-mono); font-size:11px; color:#A9A089; font-style:normal;}
+  .m-pricing{display:grid; grid-template-columns:repeat(2,1fr); gap:24px; max-width:680px;}
+  @media (max-width:600px){ .m-pricing{grid-template-columns:1fr;} }
+  .m-price-card{
+    background:var(--paper); border-radius:8px; padding:28px 26px; position:relative;
+  }
+  .m-price-card.featured{outline:2px solid var(--amber);}
+  .m-badge{
+    position:absolute; top:-12px; right:20px;
+    background:var(--amber); color:#FFF6EC; font-family:var(--font-mono);
+    font-size:10px; letter-spacing:0.06em; padding:4px 10px; border-radius:10px;
+  }
+  .m-price-card .m-plan{font-family:var(--font-mono); font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--paper-muted);}
+  .m-price-card .m-amount{font-family:var(--font-display); font-size:36px; font-weight:600; margin:8px 0 4px; color:var(--paper-text);}
+  .m-price-card .m-cadence{font-size:13px; color:var(--paper-muted); margin-bottom:18px;}
+  .m-price-card ul{list-style:none; margin:0 0 22px; padding:0;}
+  .m-price-card li{font-size:13px; line-height:1.7; color:var(--paper-text); padding-left:16px; position:relative;}
+  .m-price-card li::before{content:"—"; position:absolute; left:0; color:var(--amber-deep);}
+  .m-faq-item{border-bottom:1px solid #3A3F4C;}
+  .m-faq-q{
+    width:100%; text-align:left; background:none; border:none; cursor:pointer;
+    padding:18px 0; font-family:var(--font-display); font-size:16px; color:var(--paper);
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+  }
+  .m-faq-q .m-faq-icon{font-family:var(--font-mono); color:var(--amber); font-size:16px;}
+  .m-faq-a{
+    font-size:14px; line-height:1.6; color:#C9BFA8; padding:0 0 18px; max-width:600px; display:none;
+  }
+  .m-faq-item.open .m-faq-a{display:block;}
+  .m-final-cta{text-align:center; padding:90px 0 60px;}
+  .m-final-cta h2{
+    font-family:var(--font-display); font-weight:500; font-size:30px; color:var(--paper); margin:0 0 20px;
+  }
+  .m-footer{
+    text-align:center; padding:30px 0; font-family:var(--font-mono); font-size:11px; color:#73695A;
+  }
+
+  /* ===== CHECKOUT ===== */
+  .checkout-wrap{max-width:480px; margin:60px auto; padding:0 20px;}
+  .checkout-card{
+    background:var(--paper); border-radius:8px; padding:32px 30px; border:1px solid var(--border);
+  }
+  .checkout-card h2{font-family:var(--font-display); font-weight:500; font-size:22px; margin:0 0 6px;}
+  .checkout-recap{
+    display:flex; justify-content:space-between; align-items:baseline;
+    border:1px dashed var(--border); border-radius:6px; padding:14px 16px; margin:18px 0 22px;
+  }
+  .checkout-recap .plan-name{font-family:var(--font-mono); font-size:12px; letter-spacing:0.06em; color:var(--paper-muted); text-transform:uppercase;}
+  .checkout-recap .plan-price{font-family:var(--font-display); font-size:20px; font-weight:600;}
+  .checkout-field{margin-bottom:14px;}
+  .checkout-field label{display:block; font-size:12px; color:var(--paper-muted); margin-bottom:5px;}
+  .checkout-field input{
+    width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:4px;
+    background:#EFEAE0; color:var(--paper-muted); font-family:var(--font-body); font-size:14px;
+  }
+  .checkout-demo-note{
+    font-family:var(--font-mono); font-size:11px; color:var(--amber-deep);
+    background:#FAEEDA; border-radius:4px; padding:10px 12px; margin:18px 0;
+  }
+  .checkout-back{display:block; text-align:center; margin-top:16px; font-family:var(--font-mono); font-size:11px; color:var(--paper-muted); text-decoration:underline; cursor:pointer; background:none; border:none;}
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<div class="step active" id="step-landing">
+<div class="marketing">
+
+  <div class="m-nav">
+    <div class="mark">DATE MY WIFE</div>
+    <div class="m-nav-links">
+      <a href="#how-it-works">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </div>
+  </div>
+
+  <div class="m-hero">
+    <div>
+      <div class="m-eyebrow">A weekly idea, picked for her</div>
+      <h1>Be the husband with the system.</h1>
+      <p class="m-sub">Date My Wife learns what she actually loves, then sends you one thoughtful idea a week — a gift, a date, or a gesture — before you even have to think about it.</p>
+      <div class="m-hero-actions">
+        <a href="#pricing" class="btn">Start for $9.99/mo</a>
+        <a href="#how-it-works" class="m-link-muted">See how it works ↓</a>
+      </div>
+    </div>
+    <div class="m-card">
+      <div class="stamp together">TOGETHER</div>
+      <h4>Saturday market, then cook together</h4>
+      <p>Pick produce together, then make dinner side by side that evening.</p>
+      <p class="why">Matches her preference for low-key, hands-on time together.</p>
+    </div>
+  </div>
+
+  <div class="m-section" id="how-it-works">
+    <div class="m-section-eyebrow">How it works</div>
+    <h2>Three minutes a week, tops.</h2>
+    <div class="m-steps">
+      <div class="m-step">
+        <div class="m-step-no">01</div>
+        <h3>Tell us about her</h3>
+        <p>A few quick questions, plus the small things you've noticed — what she'd buy without hesitation, what she still brings up months later.</p>
+      </div>
+      <div class="m-step">
+        <div class="m-step-no">02</div>
+        <h3>We do the digging</h3>
+        <p>Real, current ideas — restaurants, gifts, gestures — matched to her, not pulled from a generic gift-guide template.</p>
+      </div>
+      <div class="m-step">
+        <div class="m-step-no">03</div>
+        <h3>One idea lands, weekly</h3>
+        <p>React honestly. It gets sharper every time — by the second month it knows her better than a generic list ever could.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="m-section">
+    <div class="m-section-eyebrow">What husbands are saying</div>
+    <h2>(So far, anyway.)</h2>
+    <div class="m-testimonials">
+      <div class="m-quote">
+        <p>"I forgot our anniversary three years running. This year I didn't have to remember anything."</p>
+        <cite>— Mark T.</cite>
+      </div>
+      <div class="m-quote">
+        <p>"She thinks I've gotten really good at this. I have not. I just have an app."</p>
+        <cite>— Daniel R.</cite>
+      </div>
+      <div class="m-quote">
+        <p>"The pottery class idea was so specific I assumed she'd told someone. She hadn't. I had."</p>
+        <cite>— James K.</cite>
+      </div>
+    </div>
+  </div>
+
+  <div class="m-section" id="pricing">
+    <div class="m-section-eyebrow">Pricing</div>
+    <h2>Less than two coffees a month.</h2>
+    <div class="m-pricing">
+      <div class="m-price-card">
+        <div class="m-plan">Monthly</div>
+        <div class="m-amount">$9.99</div>
+        <div class="m-cadence">billed every month</div>
+        <ul>
+          <li>One idea a week, every category</li>
+          <li>Learns from your feedback</li>
+          <li>Cancel anytime</li>
+        </ul>
+        <button class="btn btn-ghost" style="width:100%;" onclick="goToCheckout('monthly')">Choose monthly</button>
+      </div>
+      <div class="m-price-card featured">
+        <div class="m-badge">2 months free</div>
+        <div class="m-plan">Annual</div>
+        <div class="m-amount">$99</div>
+        <div class="m-cadence">billed once a year</div>
+        <ul>
+          <li>Everything in Monthly</li>
+          <li>Works out to $8.25/mo</li>
+          <li>Cancel anytime</li>
+        </ul>
+        <button class="btn" style="width:100%;" onclick="goToCheckout('annual')">Choose annual</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="m-section" id="faq">
+    <div class="m-section-eyebrow">FAQ</div>
+    <h2>Questions, answered plainly.</h2>
+    <div id="faq-list">
+      <div class="m-faq-item">
+        <button class="m-faq-q"><span>Will she know I'm using this?</span><span class="m-faq-icon">+</span></button>
+        <div class="m-faq-a">That's up to you — most people keep it as their own quiet advantage. Nothing about Date My Wife is visible to her unless you show her.</div>
+      </div>
+      <div class="m-faq-item">
+        <button class="m-faq-q"><span>What if the first ideas aren't quite right?</span><span class="m-faq-icon">+</span></button>
+        <div class="m-faq-a">The first batch is a calibration round, not the real thing — you react to a handful of ideas before the first real week even starts, so it's already tuned before it counts.</div>
+      </div>
+      <div class="m-faq-item">
+        <button class="m-faq-q"><span>Is this just for wives?</span><span class="m-faq-icon">+</span></button>
+        <div class="m-faq-a">No — it works for any partner. "Wife" is just the name.</div>
+      </div>
+      <div class="m-faq-item">
+        <button class="m-faq-q"><span>What information do you store about her?</span><span class="m-faq-icon">+</span></button>
+        <div class="m-faq-a">Just what you tell us and how you react to ideas each week — nothing pulled in from outside sources, and nothing shared or sold.</div>
+      </div>
+      <div class="m-faq-item">
+        <button class="m-faq-q"><span>Can I cancel anytime?</span><span class="m-faq-icon">+</span></button>
+        <div class="m-faq-a">Yes, anytime, no questions asked.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="m-final-cta">
+    <h2>Show up better this week.</h2>
+    <a href="#pricing" class="btn">Start for $9.99/mo</a>
+  </div>
+
+  <div class="m-footer">Date My Wife — a quieter way to be thoughtful.</div>
+
+</div>
+</div>
+
+<!-- CHECKOUT -->
+<div class="step" id="step-checkout">
+<div class="checkout-wrap">
+  <div class="checkout-card">
+    <h2>Confirm your plan</h2>
+    <p class="field-sub" style="margin:0;">One last step before the questionnaire.</p>
+    <div class="checkout-recap">
+      <div>
+        <div class="plan-name" id="checkout-plan-name">Monthly</div>
+      </div>
+      <div class="plan-price" id="checkout-plan-price">$9.99/mo</div>
+    </div>
+    <div class="checkout-field">
+      <label>Email</label>
+      <input type="text" placeholder="you@example.com">
+    </div>
+    <div class="checkout-field">
+      <label>Card number</label>
+      <input type="text" value="4242 4242 4242 4242" disabled>
+    </div>
+    <div class="grid-2">
+      <div class="checkout-field">
+        <label>Expiry</label>
+        <input type="text" value="12 / 28" disabled>
+      </div>
+      <div class="checkout-field">
+        <label>CVC</label>
+        <input type="text" value="123" disabled>
+      </div>
+    </div>
+    <div class="checkout-demo-note">This is a demo checkout — no real payment is processed.</div>
+    <button class="btn" id="btn-checkout-confirm" style="width:100%;">Confirm & start the questionnaire</button>
+    <button class="checkout-back" id="btn-checkout-back">← back to pricing</button>
+  </div>
+</div>
+</div>
+
+
+<div class="wrap" id="app-shell" style="display:none;">
+
+  <div class="masthead">
+    <div class="mark">DATE MY WIFE</div>
+    <h1>A running log of what makes them, them</h1>
+    <div class="tagline">weekly ideas, quietly getting better at knowing your person</div>
+  </div>
+
+  <div class="page">
+
+    <!-- ONBOARDING -->
+    <div class="step" id="step-onboarding">
+      <div class="eyebrow">Entry 001</div>
+      <h2 class="entry-title">Open a file on them</h2>
+      <p class="field-sub" style="margin-bottom:10px;">Answer what you can. Specific beats thorough.</p>
+      <div style="margin-bottom:24px;">
+        <button class="btn btn-ghost" id="btn-fill-sample" type="button">Fill with sample answers</button>
+        <button class="btn btn-ghost" id="btn-demo-mode" type="button">See a demo (skip AI calls)</button>
+      </div>
+
+      <div class="section">
+        <div class="section-label">The basics</div>
+        <div class="field">
+          <label class="field-label" for="f-name">Their name</label>
+          <input type="text" id="f-name" placeholder="e.g. Sam">
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label class="field-label" for="f-city">Where you're based</label>
+            <input type="text" id="f-city" placeholder="City, region">
+          </div>
+          <div class="field">
+            <label class="field-label" for="f-length">Together for</label>
+            <input type="text" id="f-length" placeholder="e.g. 4 years (optional)">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label class="field-label" for="f-anniv">Anniversary</label>
+            <input type="date" id="f-anniv">
+          </div>
+          <div class="field">
+            <label class="field-label" for="f-bday">Their birthday</label>
+            <input type="date" id="f-bday">
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">The reveal</div>
+
+        <div class="field">
+          <div class="tag-no">ENTRY 01</div>
+          <label class="field-label">The last thing you bought them that genuinely lit them up</label>
+          <textarea id="q1"></textarea>
+        </div>
+        <div class="field">
+          <div class="tag-no">ENTRY 02</div>
+          <label class="field-label">Something they'd buy without a second thought, money no object</label>
+          <textarea id="q2"></textarea>
+        </div>
+        <div class="field">
+          <div class="tag-no">ENTRY 03</div>
+          <label class="field-label">A meal or place they still bring up</label>
+          <textarea id="q3"></textarea>
+        </div>
+        <div class="field">
+          <div class="tag-no">ENTRY 04</div>
+          <label class="field-label">A small luxury they downplay loving</label>
+          <textarea id="q4"></textarea>
+        </div>
+        <div class="field">
+          <div class="tag-no">ENTRY 05</div>
+          <label class="field-label">Their idea of a perfect low-key Saturday, no plans, no guilt</label>
+          <textarea id="q5"></textarea>
+        </div>
+        <div class="field">
+          <div class="tag-no">ENTRY 06</div>
+          <label class="field-label">A trip, place, or memory that means something to them</label>
+          <textarea id="q6"></textarea>
+        </div>
+        <div class="field">
+          <div class="tag-no">ENTRY 07</div>
+          <label class="field-label">Do they light up more trying something new, or returning to a favorite?</label>
+          <textarea id="q7"></textarea>
+        </div>
+        <div class="field">
+          <div class="tag-no">ENTRY 08</div>
+          <label class="field-label">Describe the perfect night away in a hotel</label>
+          <textarea id="q8"></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">The vault</div>
+        <div class="field-sub" style="margin-bottom:14px;">The small standing details that make logistics painless.</div>
+        <div class="field">
+          <label class="field-label" for="f-vault-notes">Anything else worth keeping on file</label>
+          <textarea id="f-vault-notes" placeholder="A florist they like, a usual coffee order, a regular table at a restaurant…"></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Anything else</div>
+        <div class="field">
+          <label class="field-label" for="q-open">Habits, in-jokes, things they've mentioned in passing</label>
+          <textarea id="q-open" style="min-height:80px;"></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Getting around</div>
+        <div class="grid-2">
+          <div class="field">
+            <label class="field-label" for="f-transport">Transportation, as a couple</label>
+            <select id="f-transport">
+              <option value="car">Have a car</option>
+              <option value="transit">Rely on public transit</option>
+              <option value="walk">Mostly walk or bike</option>
+              <option value="none">No reliable transport</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="field-label" for="f-radius">Comfortable travel</label>
+            <select id="f-radius">
+              <option value="nearby (under 15 min)">Nearby only, under 15 min</option>
+              <option value="up to 30 min" selected>Up to 30 min</option>
+              <option value="up to an hour">Up to an hour</option>
+              <option value="occasional day trips">Occasional day trips</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label" for="f-budget">Usual budget for a gift or date</label>
+          <select id="f-budget">
+            <option value="modest, under $30">Modest — under $30</option>
+            <option value="moderate, $30-100" selected>Moderate — $30 to $100</option>
+            <option value="generous, $100-300">Generous — $100 to $300</option>
+            <option value="open, $300+">Open — $300+</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label" for="f-has-kids">Do you have kids?</label>
+          <select id="f-has-kids">
+            <option value="no" selected>No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </div>
+        <div id="sitter-detail-row" style="display:none;">
+          <div class="grid-2">
+            <div class="field">
+              <label class="field-label" for="f-sitter-frequency">How often you'd need a sitter</label>
+              <select id="f-sitter-frequency">
+                <option value="sometimes">Sometimes</option>
+                <option value="usually">Most times out</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label" for="f-has-sitter">Sitter status</label>
+              <select id="f-has-sitter">
+                <option value="have one lined up">Already have one lined up</option>
+                <option value="would need to find one">Would need to find one</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label" for="f-sitter-lead">Notice they'd need</label>
+            <select id="f-sitter-lead">
+              <option value="same day is fine">Same day is fine</option>
+              <option value="1-2 days notice" selected>1 to 2 days</option>
+              <option value="a week or more">A week or more</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="onboarding-error"></div>
+      <div class="submit-row">
+        <button class="btn" id="btn-submit-onboarding">Open the file</button>
+      </div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="step" id="step-loading">
+      <div class="loading-box">
+        <div class="spinner"></div>
+        <p id="loading-text">Reading between the lines…</p>
+      </div>
+    </div>
+
+    <!-- ERROR -->
+    <div class="step" id="step-error">
+      <div class="error-box" id="error-message">Something went wrong.</div>
+      <div class="btn-row">
+        <button class="btn" id="btn-retry">Try again</button>
+        <button class="btn btn-ghost" id="btn-error-reset">Start over</button>
+      </div>
+    </div>
+
+    <!-- CALIBRATION -->
+    <div class="step" id="step-calibration">
+      <div class="eyebrow">Entry 002</div>
+      <h2 class="entry-title">A first pass</h2>
+      <p class="field-sub" style="margin-bottom:24px;">Before the real picks, a quick gut check — react to whatever stands out. Skip anything you're unsure about.</p>
+      <div id="calibration-buy"></div>
+      <div id="calibration-together"></div>
+      <div id="calibration-for"></div>
+      <div class="submit-row">
+        <button class="btn" id="btn-finish-calibration">See my first week's picks</button>
+      </div>
+    </div>
+
+    <!-- EMAIL -->
+    <div class="step" id="step-email">
+      <div class="eyebrow" id="email-week-label">Field note — week 1</div>
+      <h2 class="entry-title" id="email-subject">This week for them</h2>
+      <p class="field-sub" style="margin-bottom:24px;">Three picks. React honestly — the next batch gets better for it.</p>
+
+      <div id="rec-cards"></div>
+
+      <div class="btn-row" id="next-week-row" style="display:none;">
+        <button class="btn" id="btn-next-week">See next week's picks</button>
+      </div>
+
+      <div class="profile-panel">
+        <div class="eyebrow">The file so far</div>
+        <p class="profile-summary" id="profile-summary"></p>
+        <div class="chips" id="profile-chips"></div>
+      </div>
+    </div>
+
+    <div class="footer-link">
+      <button id="btn-reset">start over from scratch</button>
+      &nbsp;·&nbsp;
+      <button id="btn-back-home">← Date My Wife home</button>
+    </div>
+
+
+  </div>
+</div>
+
+<script>
+let state = {
+  answers: {},
+  profile: null,
+  calibrationItems: [],
+  feedbackLog: [],
+  recommendations: [],
+  week: 1
+};
+
+const STORAGE_KEY = 'fieldnotes-state';
+
+const DEMO_PROFILE = {
+  summary: "Jamie is warm and low-key, lights up over hands-on creative things and quiet unstructured mornings, with an adventurous streak when the mood strikes.",
+  tags: [
+    { name:"ceramics", category:"buy", weight:7 },
+    { name:"wine country", category:"together", weight:6 },
+    { name:"quiet mornings", category:"for", weight:8 },
+    { name:"farmers markets", category:"together", weight:6 },
+    { name:"candles", category:"buy", weight:6 },
+    { name:"hiking", category:"together", weight:7 },
+    { name:"low-key evenings", category:"general", weight:8 },
+    { name:"sentimental keepsakes", category:"general", weight:5 }
+  ]
+};
+
+const DEMO_CALIBRATION = [
+  { category:"buy", tag:"ceramics", title:"Hand-thrown ceramic vase", description:"Earthy, matte-glazed piece from a local maker." },
+  { category:"buy", tag:"candles", title:"Small-batch soy candle set", description:"Three scents from a neighborhood shop." },
+  { category:"buy", tag:"watercolor", title:"Watercolor starter kit", description:"For the painting hobby she mentioned restarting." },
+  { category:"buy", tag:"books", title:"First edition of a favorite novel", description:"A used bookstore find, lightly worn." },
+  { category:"buy", tag:"jewelry", title:"Delicate gold stacking ring", description:"Simple, everyday, not flashy." },
+  { category:"together", tag:"wine country", title:"Day trip to a nearby vineyard", description:"Tasting flight and a slow lunch." },
+  { category:"together", tag:"hiking", title:"Sunrise hike at a local trail", description:"Coffee after at the trailhead café." },
+  { category:"together", tag:"farmers markets", title:"Saturday market, then cook together", description:"Pick ingredients, make dinner side by side." },
+  { category:"together", tag:"live music", title:"Small venue acoustic show", description:"Intimate room, no big crowd." },
+  { category:"together", tag:"pottery class", title:"Beginner pottery class for two", description:"Two-hour studio session downtown." },
+  { category:"for", tag:"quiet mornings", title:"Handle Sunday errands solo", description:"So she gets a slow, guilt-free morning." },
+  { category:"for", tag:"low-key evenings", title:"Cook her favorite meal at home", description:"No occasion needed, just because." },
+  { category:"for", tag:"sentimental keepsakes", title:"Print and frame a favorite photo", description:"From a trip she still talks about." },
+  { category:"for", tag:"organization", title:"Reorganize the closet she's been avoiding", description:"One less thing on her list." },
+  { category:"for", tag:"quiet mornings", title:"Bring coffee in bed on a weekday", description:"Five minutes, no agenda." }
+];
+
+const DEMO_WEEK1 = [
+  { category:"buy", title:"Hand-thrown ceramic mug set", description:"A two-piece set from an Austin ceramicist, matte glaze, neutral tones.", why:"Ties to the pottery class she keeps circling back to." },
+  { category:"together", title:"Saturday market, then cook together", description:"Pick produce together, then make dinner side by side that evening.", why:"Matches her preference for low-key, hands-on time together." },
+  { category:"for", title:"Handle Sunday errands so she sleeps in", description:"Groceries and coffee run, done before she's up.", why:"She said a free morning with no plans is her idea of perfect." }
+];
+
+const DEMO_WEEK2 = [
+  { category:"buy", title:"Pottery studio gift card", description:"Credit toward a class or open studio time at the place she mentioned.", why:"Built directly on the \"this fits\" reaction to the pottery class idea." },
+  { category:"together", title:"Sunrise hike at the greenbelt", description:"Early trail walk, coffee after at the trailhead.", why:"Liked outdoor, low-key activities in the calibration round." },
+  { category:"for", title:"Frame the photo from the Sedona trip", description:"Pick her favorite shot and get it printed and framed.", why:"A sentimental, low-effort gesture tied to a trip she already loves." }
+];
+
+const APP_STEPS = ['step-onboarding','step-loading','step-error','step-calibration','step-email'];
+
+function showStep(id){
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('app-shell').style.display = APP_STEPS.includes(id) ? 'block' : 'none';
+}
+
+function goToCheckout(plan){
+  document.getElementById('checkout-plan-name').textContent = plan === 'annual' ? 'Annual' : 'Monthly';
+  document.getElementById('checkout-plan-price').textContent = plan === 'annual' ? '$99/yr' : '$9.99/mo';
+  showStep('step-checkout');
+}
+
+document.getElementById('btn-checkout-confirm').onclick = () => showStep('step-onboarding');
+document.getElementById('btn-checkout-back').onclick = () => showStep('step-landing');
+
+document.querySelectorAll('.m-faq-q').forEach(btn => {
+  btn.onclick = () => {
+    const item = btn.closest('.m-faq-item');
+    const icon = btn.querySelector('.m-faq-icon');
+    const opening = !item.classList.contains('open');
+    item.classList.toggle('open');
+    icon.textContent = opening ? '–' : '+';
+  };
+});
+
+function setLoading(text){
+  document.getElementById('loading-text').textContent = text;
+  showStep('step-loading');
+}
+
+function showError(message, retryFn){
+  document.getElementById('error-message').textContent = message;
+  showStep('step-error');
+  document.getElementById('btn-retry').onclick = retryFn;
+}
+
+async function saveState(){
+  try{
+    await window.storage.set(STORAGE_KEY, JSON.stringify(state), false);
+  }catch(e){ console.error('save failed', e); }
+}
+
+async function loadState(){
+  try{
+    const result = await window.storage.get(STORAGE_KEY, false);
+    if(result && result.value){
+      state = JSON.parse(result.value);
+      if(state.profile && state.recommendations && state.recommendations.length){
+        renderEmailScreen();
+        showStep('step-email');
+        return;
+      }
+      if(state.profile && state.calibrationItems && state.calibrationItems.length){
+        renderCalibrationScreen();
+        showStep('step-calibration');
+        return;
+      }
+    }
+  }catch(e){ /* nothing stored yet */ }
+  showStep('step-landing');
+}
+
+async function resetAll(){
+  try{ await window.storage.delete(STORAGE_KEY, false); }catch(e){}
+  state = { answers:{}, profile:null, calibrationItems:[], feedbackLog:[], recommendations:[], week:1 };
+  document.querySelectorAll('#step-onboarding textarea, #step-onboarding input[type=text], #step-onboarding input[type=date]').forEach(el => el.value = '');
+  showStep('step-onboarding');
+}
+
+document.getElementById('btn-reset').onclick = resetAll;
+document.getElementById('btn-back-home').onclick = () => showStep('step-landing');
+document.getElementById('btn-error-reset').onclick = resetAll;
+
+function cleanJsonText(t){
+  return t.replace(/```json/gi,'').replace(/```/g,'').trim();
+}
+
+function extractJsonBlock(text){
+  const cleaned = cleanJsonText(text);
+  try{ return JSON.parse(cleaned); }catch(e){}
+  const firstObj = cleaned.indexOf('{');
+  const firstArr = cleaned.indexOf('[');
+  let start = -1, endChar = '';
+  if(firstArr !== -1 && (firstObj === -1 || firstArr < firstObj)){ start = firstArr; endChar = ']'; }
+  else if(firstObj !== -1){ start = firstObj; endChar = '}'; }
+  if(start === -1) throw new Error('No JSON found in the response — try again.');
+  const end = cleaned.lastIndexOf(endChar);
+  if(end === -1 || end <= start) throw new Error('No JSON found in the response — try again.');
+  return JSON.parse(cleaned.slice(start, end + 1));
+}
+
+async function callClaude(promptText, useSearch){
+  const body = {
+    model: 'claude-sonnet-4-6',
+    max_tokens: 1000,
+    messages: [{ role:'user', content: promptText }]
+  };
+  if(useSearch){
+    body.tools = [{ type:'web_search_20250305', name:'web_search' }];
+  }
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json' },
+    body: JSON.stringify(body)
+  });
+  if(!res.ok) throw new Error('The model request failed (' + res.status + ').');
+  const data = await res.json();
+  const textBlocks = (data.content || []).filter(b => b.type === 'text');
+  if(!textBlocks.length) throw new Error('No response text came back.');
+  return textBlocks[textBlocks.length - 1].text;
+}
+
+function gatherAnswers(){
+  const hasKids = document.getElementById('f-has-kids').value;
+  return {
+    partnerName: document.getElementById('f-name').value.trim() || 'them',
+    city: document.getElementById('f-city').value.trim(),
+    relationshipLength: document.getElementById('f-length').value.trim(),
+    anniversary: document.getElementById('f-anniv').value,
+    birthday: document.getElementById('f-bday').value,
+    transportMode: document.getElementById('f-transport').value,
+    travelRadius: document.getElementById('f-radius').value,
+    budget: document.getElementById('f-budget').value,
+    hasKids: hasKids,
+    sitterFrequency: hasKids === 'yes' ? document.getElementById('f-sitter-frequency').value : null,
+    hasSitter: hasKids === 'yes' ? document.getElementById('f-has-sitter').value : null,
+    sitterLeadTime: hasKids === 'yes' ? document.getElementById('f-sitter-lead').value : null,
+    vaultNotes: document.getElementById('f-vault-notes').value.trim(),
+    reveal: {
+      lastBoughtLoved: document.getElementById('q1').value.trim(),
+      moneyNoObject: document.getElementById('q2').value.trim(),
+      mealOrPlace: document.getElementById('q3').value.trim(),
+      smallLuxury: document.getElementById('q4').value.trim(),
+      perfectSaturday: document.getElementById('q5').value.trim(),
+      meaningfulTrip: document.getElementById('q6').value.trim(),
+      noveltyVsRitual: document.getElementById('q7').value.trim(),
+      hotelNight: document.getElementById('q8').value.trim()
+    },
+    openNotes: document.getElementById('q-open').value.trim()
+  };
+}
+
+document.getElementById('f-has-kids').addEventListener('change', (e) => {
+  document.getElementById('sitter-detail-row').style.display = e.target.value === 'yes' ? 'block' : 'none';
+});
+
+document.getElementById('btn-fill-sample').onclick = () => {
+  document.getElementById('f-name').value = 'Jamie';
+  document.getElementById('f-city').value = 'Austin, TX';
+  document.getElementById('f-length').value = '5 years';
+  document.getElementById('f-anniv').value = '2019-06-14';
+  document.getElementById('f-bday').value = '1990-03-22';
+  document.getElementById('f-vault-notes').value = 'Always orders a flat white, hits the farmers market most Saturdays.';
+  document.getElementById('f-transport').value = 'car';
+  document.getElementById('f-radius').value = 'up to an hour';
+  document.getElementById('f-budget').value = 'moderate, $30-100';
+  document.getElementById('f-has-kids').value = 'yes';
+  document.getElementById('f-has-kids').dispatchEvent(new Event('change'));
+  document.getElementById('f-sitter-frequency').value = 'sometimes';
+  document.getElementById('f-has-sitter').value = 'would need to find one';
+  document.getElementById('f-sitter-lead').value = '1-2 days notice';
+  document.getElementById('q1').value = 'A set of watercolor paints after she mentioned wanting to paint again.';
+  document.getElementById('q2').value = 'A weekend in wine country, no hesitation.';
+  document.getElementById('q3').value = 'A little Italian place downtown she still brings up two years later.';
+  document.getElementById('q4').value = "Fancy candles — she calls them a waste of money but lights them immediately.";
+  document.getElementById('q5').value = 'Pancakes, a podcast, and zero plans before noon.';
+  document.getElementById('q6').value = 'A hiking trip in Sedona for her 30th birthday.';
+  document.getElementById('q7').value = "She'll try almost anything once, but always goes back to the same coffee shop.";
+  document.getElementById('q8').value = "A boutique hotel downtown, room service, and absolutely no agenda the next morning.";
+  document.getElementById('q-open').value = 'Hums when she cooks. Keeps every movie ticket stub from dates.';
+  document.getElementById('onboarding-error').innerHTML = '';
+};
+
+document.getElementById('btn-demo-mode').onclick = async () => {
+  state.answers = { partnerName:'Jamie', city:'Austin, TX' };
+  state.profile = JSON.parse(JSON.stringify(DEMO_PROFILE));
+  state.calibrationItems = JSON.parse(JSON.stringify(DEMO_CALIBRATION)).map(i => ({ ...i, reaction:null, resolved:false, popular:false }));
+  state.demoMode = true;
+  state.week = 1;
+  await saveState();
+  renderCalibrationScreen();
+  showStep('step-calibration');
+};
+
+document.getElementById('btn-submit-onboarding').onclick = async () => {
+  const answers = gatherAnswers();
+  if(!answers.partnerName || answers.partnerName === 'them'){
+    document.getElementById('onboarding-error').innerHTML = '<div class="error-box">Add their name to get started.</div>';
+    return;
+  }
+  document.getElementById('onboarding-error').innerHTML = '';
+  state.answers = answers;
+  state.week = 1;
+  await runExtraction();
+};
+
+async function runExtraction(){
+  setLoading('Reading between the lines…');
+  try{
+    const prompt = `You are building a structured "taste profile" for a partner-gifting app, based on answers one person gave about their partner, ${state.answers.partnerName}.
+
+Answers:
+${JSON.stringify(state.answers, null, 2)}
+
+Extract a structured profile. Respond with ONLY valid JSON, no markdown fences, no preamble, in exactly this shape:
+{
+  "summary": "one or two warm, specific sentences describing this person, written in third person",
+  "tags": [
+    {"name": "short concrete tag, e.g. 'ceramics' or 'quiet mornings'", "category": "buy" | "together" | "for" | "general", "weight": 1-10}
+  ]
+}
+Produce 8 to 14 tags drawn directly from specifics in the answers above. Higher weight means a stronger, more confident signal. Do not invent details that aren't implied by the answers.`;
+    const raw = await callClaude(prompt, false);
+    const parsed = extractJsonBlock(raw);
+    state.profile = parsed;
+    await saveState();
+    await runCalibration();
+  }catch(e){
+    showError('Couldn\'t build the profile. ' + e.message, runExtraction);
+  }
+}
+
+const SHARED_LIKES_KEY = 'fieldnotes-shared-tag-likes';
+
+async function getSharedTagLikes(){
+  try{
+    const result = await window.storage.get(SHARED_LIKES_KEY, true);
+    return result && result.value ? JSON.parse(result.value) : {};
+  }catch(e){ return {}; }
+}
+
+async function bumpSharedTagLikes(tags){
+  try{
+    const current = await getSharedTagLikes();
+    tags.forEach(t => {
+      const key = (t || '').toLowerCase().trim();
+      if(!key) return;
+      current[key] = (current[key] || 0) + 1;
+    });
+    await window.storage.set(SHARED_LIKES_KEY, JSON.stringify(current), true);
+  }catch(e){ console.error('shared like bump failed', e); }
+}
+
+async function runCalibration(){
+  setLoading('Pulling a few ideas together to test…');
+  try{
+    const base = (label, needsSearch, hint) => `You are finding ${label} for ${state.answers.partnerName}, to use as a quick calibration round before a partner-gifting app's first real recommendations.
+
+Profile summary: ${state.profile.summary}
+Profile tags: ${JSON.stringify(state.profile.tags)}
+Location: ${state.answers.city || 'unspecified'}
+Transportation as a couple: ${state.answers.transportMode}, comfortable travel: ${state.answers.travelRadius}
+Budget comfort: ${state.answers.budget}
+${hint}
+
+${needsSearch ? 'Use web search to find real, current, specific options near the stated location.' : 'These do not need to be searched — they can be acts of service or general ideas tied to the profile.'} Keep every title under 6 words and every description under 12 words — be terse.
+
+Respond with ONLY a JSON array of exactly 5 objects, no other text, no markdown fences, in exactly this shape:
+[{"tag": "short taste tag this tests, e.g. 'ceramics'", "title": "short title", "description": "very short description"}]`;
+
+    const [together, buy, forThem] = await Promise.all([
+      callClaude(base('5 specific things to do together', true, 'Looking for classes, restaurants, events, or activities — name real, specific options.'), true),
+      callClaude(base('5 specific gift ideas', true, 'Looking for specific products, makers, or shops where possible.'), true),
+      callClaude(base('5 thoughtful acts of service', false, 'Looking for things one partner could simply do for the other.'), false)
+    ]);
+
+    const sharedLikes = await getSharedTagLikes();
+    const tagItems = (raw, category) => extractJsonBlock(raw).map(item => ({
+      ...item,
+      category,
+      reaction: null,
+      resolved: false,
+      popular: (sharedLikes[(item.tag || '').toLowerCase().trim()] || 0) >= 2
+    }));
+
+    state.calibrationItems = [
+      ...tagItems(buy, 'buy'),
+      ...tagItems(together, 'together'),
+      ...tagItems(forThem, 'for')
+    ];
+    await saveState();
+    renderCalibrationScreen();
+    showStep('step-calibration');
+  }catch(e){
+    showError('Couldn\'t pull together calibration ideas. ' + e.message, runCalibration);
+  }
+}
+
+function renderCalibrationScreen(){
+  const sections = [
+    { category:'buy', label:'Gift ideas', containerId:'calibration-buy' },
+    { category:'together', label:'Things to do together', containerId:'calibration-together' },
+    { category:'for', label:'Things you could do for them', containerId:'calibration-for' }
+  ];
+  sections.forEach(section => {
+    const container = document.getElementById(section.containerId);
+    container.innerHTML = `<div class="calib-section-label">${section.label}</div>`;
+    state.calibrationItems
+      .filter(item => item.category === section.category)
+      .forEach(item => {
+        const idx = state.calibrationItems.indexOf(item);
+        const card = document.createElement('div');
+        card.className = 'calib-card' + (item.resolved ? ' resolved' : '');
+        card.innerHTML = `
+          <span class="calib-tag">${escapeHtml(item.tag || section.label)}</span>
+          ${item.popular ? '<span class="calib-popular">liked by people with similar tastes</span>' : ''}
+          <h4>${escapeHtml(item.title)}</h4>
+          <p>${escapeHtml(item.description)}</p>
+          ${item.resolved
+            ? `<div class="resolved-tag">logged: ${item.reaction}</div>`
+            : `<div class="btn-row">
+                <button class="btn btn-ghost" data-calib-idx="${idx}" data-reaction="liked">This fits</button>
+                <button class="btn btn-ghost" data-calib-idx="${idx}" data-reaction="disliked">Not quite</button>
+              </div>`
+          }
+        `;
+        container.appendChild(card);
+      });
+  });
+
+  document.querySelectorAll('#step-calibration button[data-calib-idx]').forEach(btn => {
+    btn.onclick = () => handleCalibrationReaction(parseInt(btn.dataset.calibIdx), btn.dataset.reaction);
+  });
+}
+
+function handleCalibrationReaction(idx, reaction){
+  state.calibrationItems[idx].reaction = reaction;
+  state.calibrationItems[idx].resolved = true;
+  saveState();
+  renderCalibrationScreen();
+}
+
+function applyCalibrationToProfile(){
+  const tags = state.profile.tags;
+  state.calibrationItems.forEach(item => {
+    if(!item.reaction) return;
+    const existing = tags.find(t => t.name.toLowerCase() === (item.tag || '').toLowerCase());
+    if(existing){
+      existing.weight = item.reaction === 'liked'
+        ? Math.min(10, existing.weight + 2)
+        : Math.max(1, existing.weight - 2);
+    }else if(item.reaction === 'liked' && item.tag){
+      tags.push({ name:item.tag, category:item.category, weight:5 });
+    }
+  });
+}
+
+document.getElementById('btn-finish-calibration').onclick = async () => {
+  applyCalibrationToProfile();
+  const likedTags = state.calibrationItems.filter(i => i.reaction === 'liked').map(i => i.tag);
+  if(state.demoMode){
+    state.recommendations = JSON.parse(JSON.stringify(DEMO_WEEK1)).map(r => ({ ...r, reaction:null, resolved:false }));
+    await saveState();
+    renderEmailScreen();
+    showStep('step-email');
+    return;
+  }
+  await bumpSharedTagLikes(likedTags);
+  await saveState();
+  await runRecommendations();
+};
+
+async function runRecommendations(){
+  setLoading(state.week === 1 ? 'Finding this week\'s picks…' : 'Adjusting the file, finding new picks…');
+  try{
+    const prompt = `You are picking this week's personalized recommendations for a partner-dating app called Field Notes.
+
+Partner: ${state.answers.partnerName}
+Profile summary: ${state.profile.summary}
+Profile tags: ${JSON.stringify(state.profile.tags)}
+Location: ${state.answers.city || 'unspecified'}
+Transportation as a couple: ${state.answers.transportMode}, comfortable travel: ${state.answers.travelRadius}
+Budget comfort: ${state.answers.budget}
+Childcare: ${state.answers.hasKids === 'yes' ? 'has kids, needs a sitter ' + state.answers.sitterFrequency + ', sitter status: ' + state.answers.hasSitter + ', notice needed: ' + state.answers.sitterLeadTime : 'no kids / not applicable'}
+Favorite hotel / night-away preference (use only if a "night away" idea genuinely fits): ${state.answers.reveal.hotelNight || 'none given'}
+Other standing notes: ${state.answers.vaultNotes || 'none'}
+Past feedback (avoid repeating "disliked" or "already done" ideas, lean into "liked" ones): ${JSON.stringify(state.feedbackLog)}
+Week number: ${state.week}
+
+Use web search to find a real, current, specific option near the stated location for the "together" category — name an actual class, event, restaurant, or activity. Search for a specific maker, shop, or product idea for "buy" where possible. For "for" you don't need to search — it's a thoughtful act of service tied to the profile.
+
+Respect the transportation and travel constraints above — don't suggest anything that requires a car if there isn't one, or that exceeds the stated comfortable travel range. If the "together" idea is an evening out and a sitter would be needed, mention the notice period in the description so they can plan ahead.
+
+When you're done, respond with ONLY a JSON array of exactly 3 objects, no other text, no markdown fences, in exactly this shape:
+[
+  {"category": "buy", "title": "short title", "description": "1-2 sentence concrete description", "why": "one short sentence tying it to a specific profile detail"},
+  {"category": "together", "title": "...", "description": "...", "why": "..."},
+  {"category": "for", "title": "...", "description": "...", "why": "..."}
+]`;
+    const raw = await callClaude(prompt, true);
+    const parsed = extractJsonBlock(raw);
+    state.recommendations = parsed.map(r => ({ ...r, reaction:null, resolved:false }));
+    await saveState();
+    renderEmailScreen();
+    showStep('step-email');
+  }catch(e){
+    showError('Couldn\'t find this week\'s picks. ' + e.message, runRecommendations);
+  }
+}
+
+const catMeta = {
+  buy: { label:'BUY', cls:'buy' },
+  together: { label:'TOGETHER', cls:'together' },
+  for: { label:'FOR THEM', cls:'for' }
+};
+
+function buildAction(rec){
+  const q = encodeURIComponent(rec.title + (state.answers.city ? (' ' + state.answers.city) : ''));
+  if(rec.category === 'buy'){
+    return { label:'Shop this idea', url:'https://www.google.com/search?tbm=shop&q=' + q, caption:'opens a shopping search' };
+  }
+  if(rec.category === 'together'){
+    return { label:'Find & book', url:'https://www.opentable.com/s?term=' + q, caption:'opens an OpenTable search' };
+  }
+  return null;
+}
+
+function renderEmailScreen(){
+  document.getElementById('email-week-label').textContent = 'Field note — week ' + state.week;
+  document.getElementById('email-subject').textContent = 'This week for ' + state.answers.partnerName;
+
+  const container = document.getElementById('rec-cards');
+  container.innerHTML = '';
+  state.recommendations.forEach((rec, i) => {
+    const meta = catMeta[rec.category] || catMeta.for;
+    const action = buildAction(rec);
+    const card = document.createElement('div');
+    card.className = 'rec-card' + (rec.resolved ? ' resolved' : '');
+    card.innerHTML = `
+      <div class="stamp ${meta.cls}">${meta.label}</div>
+      <h3>${escapeHtml(rec.title)}</h3>
+      <p class="desc">${escapeHtml(rec.description)}</p>
+      <p class="why">${escapeHtml(rec.why)}</p>
+      ${action ? `<a class="btn cta-link" href="${action.url}" target="_blank" rel="noopener">${action.label} ↗</a><div class="cta-caption">${action.caption}</div>` : ''}
+      ${rec.resolved
+        ? `<div class="resolved-tag">logged: ${rec.reaction}</div>`
+        : `<div class="btn-row">
+            <button class="btn btn-ghost" data-action="liked" data-idx="${i}">Loved it</button>
+            <button class="btn btn-ghost" data-action="disliked" data-idx="${i}">Not this</button>
+            <button class="btn btn-ghost" data-action="done" data-idx="${i}">Already did this</button>
+          </div>`
+      }
+    `;
+    container.appendChild(card);
+  });
+
+  container.querySelectorAll('button[data-action]').forEach(btn => {
+    btn.onclick = () => handleReaction(parseInt(btn.dataset.idx), btn.dataset.action);
+  });
+
+  renderProfilePanel();
+  updateNextWeekVisibility();
+}
+
+function renderProfilePanel(){
+  document.getElementById('profile-summary').textContent = state.profile.summary;
+  const chips = document.getElementById('profile-chips');
+  chips.innerHTML = '';
+  state.profile.tags
+    .slice()
+    .sort((a,b) => b.weight - a.weight)
+    .forEach(tag => {
+      const span = document.createElement('span');
+      span.className = 'chip ' + (catMeta[tag.category] ? catMeta[tag.category].cls : 'general');
+      span.textContent = tag.name;
+      chips.appendChild(span);
+    });
+}
+
+function updateNextWeekVisibility(){
+  const allResolved = state.recommendations.every(r => r.resolved);
+  document.getElementById('next-week-row').style.display = allResolved ? 'flex' : 'none';
+}
+
+async function handleReaction(idx, reaction){
+  const rec = state.recommendations[idx];
+  rec.reaction = reaction;
+  rec.resolved = true;
+  state.feedbackLog.push({ title: rec.title, category: rec.category, reaction, week: state.week });
+  await saveState();
+  renderEmailScreen();
+}
+
+document.getElementById('btn-next-week').onclick = async () => {
+  setLoading('Updating the file…');
+  if(state.demoMode){
+    state.week += 1;
+    state.recommendations = JSON.parse(JSON.stringify(DEMO_WEEK2)).map(r => ({ ...r, reaction:null, resolved:false }));
+    await saveState();
+    renderEmailScreen();
+    showStep('step-email');
+    return;
+  }
+  try{
+    const weekFeedback = state.feedbackLog.filter(f => f.week === state.week);
+    const prompt = `Here is a current taste profile JSON:
+${JSON.stringify(state.profile)}
+
+Here is new feedback from this week's recommendations:
+${JSON.stringify(weekFeedback)}
+
+Update the tag weights: increase weight (max 10) for tags related to "liked" ideas, decrease weight (min 1) for tags related to "disliked" ideas, leave weights for "done" tags roughly the same. You may add a new tag if the feedback reveals something new, or remove a tag that's clearly disproven. Respond with ONLY the updated JSON in the exact same shape as the input (summary + tags array), no markdown fences, no preamble.`;
+    const raw = await callClaude(prompt, false);
+    state.profile = extractJsonBlock(raw);
+    state.week += 1;
+    await saveState();
+    await runRecommendations();
+  }catch(e){
+    showError('Couldn\'t update the file. ' + e.message, () => document.getElementById('btn-next-week').onclick());
+  }
+};
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : String(str);
+  return div.innerHTML;
+}
+
+loadState();
+</script>
+</body>
+</html>
