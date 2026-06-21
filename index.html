@@ -1000,18 +1000,10 @@ function extractJsonBlock(text){
 }
 
 async function callClaude(promptText, useSearch){
-  const body = {
-    model: 'claude-sonnet-4-6',
-    max_tokens: 1000,
-    messages: [{ role:'user', content: promptText }]
-  };
-  if(useSearch){
-    body.tools = [{ type:'web_search_20250305', name:'web_search' }];
-  }
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+  const res = await fetch('/api/claude', {
     method:'POST',
     headers:{ 'Content-Type':'application/json' },
-    body: JSON.stringify(body)
+    body: JSON.stringify({ promptText, useSearch })
   });
   if(!res.ok) throw new Error('The model request failed (' + res.status + ').');
   const data = await res.json();
@@ -1019,7 +1011,7 @@ async function callClaude(promptText, useSearch){
   if(!textBlocks.length) throw new Error('No response text came back.');
   return textBlocks[textBlocks.length - 1].text;
 }
-
+  
 function gatherAnswers(){
   const hasKids = document.getElementById('f-has-kids').value;
   return {
