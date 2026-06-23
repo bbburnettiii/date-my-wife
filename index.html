@@ -944,17 +944,33 @@ function showError(message, retryFn){
   document.getElementById('btn-retry').onclick = retryFn;
 }
 
-async function saveState(){
+async function dbGet(id){
   try{
-    await window.storage.set(STORAGE_KEY, JSON.stringify(state), false);
+    const res = await fetch('/api/state?id=' + id);
+    const json = await res.json();
+    return json.data;
+  }catch(e){ return null; }
+}
+
+async function dbSet(id, data){
+  try{
+    await fetch('/api/state', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ id, data })
+    });
   }catch(e){ console.error('save failed', e); }
+}
+
+async function saveState(){
+  await dbSet(1, state);
 }
 
 async function loadState(){
   try{
-    const result = await window.storage.get(STORAGE_KEY, false);
-    if(result && result.value){
-      state = JSON.parse(result.value);
+    const data = await dbGet(1);
+    if(data){
+      state = data;
       if(state.profile && state.recommendations && state.recommendations.length){
         renderEmailScreen();
         showStep('step-email');
@@ -971,11 +987,12 @@ async function loadState(){
 }
 
 async function resetAll(){
-  try{ await window.storage.delete(STORAGE_KEY, false); }catch(e){}
+  await dbSet(1, null);
   state = { answers:{}, profile:null, calibrationItems:[], feedbackLog:[], recommendations:[], week:1 };
   document.querySelectorAll('#step-onboarding textarea, #step-onboarding input[type=text], #step-onboarding input[type=date]').forEach(el => el.value = '');
   showStep('step-onboarding');
 }
+  
 
 document.getElementById('btn-reset').onclick = resetAll;
 document.getElementById('btn-back-home').onclick = () => showStep('step-landing');
@@ -1125,23 +1142,21 @@ Produce 8 to 14 tags drawn directly from specifics in the answers above. Higher 
 const SHARED_LIKES_KEY = 'fieldnotes-shared-tag-likes';
 
 async function getSharedTagLikes(){
-  try{
-    const result = await window.storage.get(SHARED_LIKES_KEY, true);
-    return result && result.value ? JSON.parse(result.value) : {};
-  }catch(e){ return {}; }
+  const data = await dbGet(2);
+  return data || {};
 }
 
 async function bumpSharedTagLikes(tags){
-  try{
-    const current = await getSharedTagLikes();
-    tags.forEach(t => {
-      const key = (t || '').toLowerCase().trim();
-      if(!key) return;
-      current[key] = (current[key] || 0) + 1;
-    });
-    await window.storage.set(SHARED_LIKES_KEY, JSON.stringify(current), true);
-  }catch(e){ console.error('shared like bump failed', e); }
+  const current = await getSharedTagLikes();
+  tags.forEach(t => {
+    const key = (t || '').toLowerCase().trim();
+    if(!key) return;
+    current[key] = (current[key] || 0) + 1;
+  });
+  await dbSet(2, current);
 }
+
+  
 
 async function runCalibration(){
   setLoading('Pulling a few ideas together to test…');
