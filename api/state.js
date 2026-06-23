@@ -31,10 +31,14 @@ export default async function handler(req, res) {
         headers: { ...headers, Prefer: 'resolution=merge-duplicates' },
         body: JSON.stringify({ id: id || 1, data })
       });
+      
       if (!response.ok) {
         const errText = await response.text();
+        console.error('Supabase write failed:', response.status, errText);
         throw new Error(errText);
       }
+
+      
       return res.status(200).json({ ok: true });
     } catch (err) {
       return res.status(500).json({ error: err.message });
