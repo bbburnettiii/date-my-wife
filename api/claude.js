@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     };
 
     if (useSearch) {
-      body.tools = [{ type: 'web_search_20250305', name: 'web_search' }];
+     body.tools = [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }];
     }
 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
