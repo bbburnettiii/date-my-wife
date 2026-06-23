@@ -8,21 +8,26 @@ export default async function handler(req, res) {
     'Content-Type': 'application/json'
   };
 
-  if (req.method === 'GET') {
+ if (req.method === 'GET') {
     try {
       const id = req.query.id || 1;
       const response = await fetch(
         `${SUPABASE_URL}/rest/v1/app_state?id=eq.${id}&select=data`,
         { headers }
       );
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error('Supabase read failed:', response.status, errText);
+        throw new Error(errText);
+      }
       const rows = await response.json();
       const data = rows && rows[0] ? rows[0].data : null;
       return res.status(200).json({ data });
     } catch (err) {
+      console.error('GET /api/state error:', err.message);
       return res.status(500).json({ error: err.message });
     }
   }
-
   if (req.method === 'POST') {
     try {
       const { id, data } = req.body;
