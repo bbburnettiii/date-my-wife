@@ -954,13 +954,18 @@ async function dbGet(id){
 
 async function dbSet(id, data){
   try{
-    await fetch('/api/state', {
+    const res = await fetch('/api/state', {
       method:'POST',
       headers:{ 'Content-Type':'application/json' },
       body: JSON.stringify({ id, data })
     });
+    if(!res.ok){
+      const errBody = await res.text();
+      console.error('save failed, status ' + res.status, errBody);
+    }
   }catch(e){ console.error('save failed', e); }
 }
+  
 
 async function saveState(){
   await dbSet(1, state);
