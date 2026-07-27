@@ -1340,6 +1340,86 @@ const catMeta = {
   for: { label:'FOR THEM', cls:'for' }
 };
 
+
+
+function getNextEvent(anniversaryStr, birthdayStr){
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const candidates = [];
+  [
+    { str: anniversaryStr, label: 'your anniversary' },
+    { str: birthdayStr, label: (state.answers.partnerName ? state.answers.partnerName + "'s" : 'her') + ' birthday' }
+  ].forEach(({ str, label }) => {
+    if(!str) return;
+    const d = new Date(str);
+    if(isNaN(d)) return;
+    const thisYear = new Date(today.getFullYear(), d.getMonth(), d.getDate());
+    const nextYear = new Date(today.getFullYear() + 1, d.getMonth(), d.getDate());
+    const target = thisYear >= today ? thisYear : nextYear;
+    const days = Math.round((target - today) / 86400000);
+    if(days <= 90) candidates.push({ label, days, date: target });
+  });
+  if(!candidates.length) return null;
+  candidates.sort((a,b) => a.days - b.days);
+  return candidates[0];
+}
+
+function renderEventCountdown(){
+  const existing = document.getElementById('event-countdown');
+  if(existing) existing.remove();
+  const event = getNextEvent(state.answers.anniversary, state.answers.birthday);
+  if(!event) return;
+  const urgency = event.days <= 14 ? 'var(--rose)' : event.days <= 30 ? 'var(--amber-deep)' : 'var(--paper-muted)';
+  const panel = document.createElement('div');
+  panel.id = 'event-countdown';
+  panel.style.cssText = 'border:1px dashed var(--border);border-radius:4px;padding:16px 18px;margin-bottom:18px;background:#FBF8F1;';
+  panel.innerHTML = `
+    <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;color:${urgency};margin-bottom:6px;">
+      ${event.days === 0 ? '🎉 TODAY' : event.days + ' DAYS TO GO'}
+    </div>
+    <div style="font-family:var(--font-display);font-size:16px;font-weight:500;margin-bottom:8px;">
+      ${event.days === 0 ? 'It\'s ' + event.label : event.label.charAt(0).toUpperCase() + event.label.slice(1) + ' is coming up'}
+    </div>
+    <p style="font-size:13px;color:var(--paper-muted);margin:0 0 12px;line-height:1.5;">
+      Want ideas matched to the occasion, with a higher budget in mind?
+    </p>
+    <button class="btn" id="btn-occasion-ideas" style="font-size:12px;padding:10px 16px;">Get occasion ideas</button>
+  `;
+  const recCards = document.getElementById('rec-cards');
+  recCards.parentNode.insertBefore(panel, recCards);
+  document.getElementById('btn-occasion-ideas').onclick = () => runOccasionIdeas(event);
+}
+
+async function runOccasionIdeas(event){
+  setLoading('Finding ideas for the occasion…');
+  try{
+    const prompt = `You are finding special occasion ideas for ${state.answers.partnerName}.
+Profile summary: ${state.profile.summary}
+Profile tags: ${JSON.stringify(state.profile.tags)}
+Location: ${state.answers.city || 'unspecified'}
+Occasion: ${event.label}, ${event.days} days away
+Budget: generous to open — this is a special event, not a regular week
+Transportation: ${state.answers.transportMode}, radius: ${state.answers.travelRadius}
+Hotel preference: ${state.answers.reveal && state.answers.reveal.hotelNight ? state.answers.reveal.hotelNight : 'none given'}
+
+Generate 3 ideas specifically for this occasion at a higher budget — one gift, one experience together, one heartfelt gesture. Use web search to find real, specific options near the location. Each must connect directly to a named profile tag. The why line must name the exact profile detail. Respond with ONLY a JSON array of 3 objects, no markdown:
+[{"category":"buy","title":"...","description":"...","why":"..."},{"category":"together","title":"...","description":"...","why":"..."},{"category":"for","title":"...","description":"...","why":"..."}]`;
+    const raw = await callClaude(prompt, true);
+    const parsed = extractJsonBlock(raw);
+    state.recommendations = parsed.map(r => ({...r, reaction:null, resolved:false}));
+    await saveState();
+    renderEmailScreen();
+    showStep('step-email');
+  }catch(e){
+    showError('Couldn\'t generate occasion ideas. ' + e.message, () => runOccasionIdeas(event));
+  }
+}
+
+
+
+
+
+  
 function buildAction(rec){
   const q = encodeURIComponent(rec.title + (state.answers.city ? (' ' + state.answers.city) : ''));
   if(rec.category === 'buy'){
