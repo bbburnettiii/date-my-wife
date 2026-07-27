@@ -1303,16 +1303,26 @@ Other standing notes: ${state.answers.vaultNotes || 'none'}
 Past feedback (avoid repeating "disliked" or "already done" ideas, lean into "liked" ones): ${JSON.stringify(state.feedbackLog)}
 Week number: ${state.week}
 
-Use web search to find a real, current, specific option near the stated location for the "together" category — name an actual class, event, restaurant, or activity. Search for a specific maker, shop, or product idea for "buy" where possible. For "for" you don't need to search — it's a thoughtful act of service tied to the profile.
 
-Respect the transportation and travel constraints above — don't suggest anything that requires a car if there isn't one, or that exceeds the stated comfortable travel range. If the "together" idea is an evening out and a sitter would be needed, mention the notice period in the description so they can plan ahead.
+
+
+CRITICAL for the "together" category: this must feel like it was chosen specifically for this person, not pulled from a generic date-night list. Search for a real, current, specific option near the stated location — but it must connect directly to one or more of her named taste tags above. The description should make the connection obvious (e.g. if she likes ceramics, find an actual pottery studio doing a class this month, not just "a class"). The "why" line must name the specific profile detail it is tied to — never write "matches her interests" or similar vague phrases.
+
+For "buy": use web search to find a specific product, maker, or shop where possible — not a category suggestion.
+For "for": no search needed — a thoughtful act of service tied to a named detail from the profile.
+
+Respect the transportation and travel constraints. If the "together" idea is an evening out and a sitter would be needed, mention the notice period in the description so they can plan ahead.
 
 When you're done, respond with ONLY a JSON array of exactly 3 objects, no other text, no markdown fences, in exactly this shape:
 [
-  {"category": "buy", "title": "short title", "description": "1-2 sentence concrete description", "why": "one short sentence tying it to a specific profile detail"},
+  {"category": "buy", "title": "short title", "description": "1-2 sentence concrete description", "why": "one short sentence naming the specific profile detail this ties to"},
   {"category": "together", "title": "...", "description": "...", "why": "..."},
   {"category": "for", "title": "...", "description": "...", "why": "..."}
 ]`;
+
+
+
+    
     const raw = await callClaude(prompt, true);
     const parsed = extractJsonBlock(raw);
     state.recommendations = parsed.map(r => ({ ...r, reaction:null, resolved:false }));
