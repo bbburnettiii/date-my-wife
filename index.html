@@ -1070,6 +1070,8 @@ document.getElementById('f-has-kids').addEventListener('change', (e) => {
   document.getElementById('sitter-detail-row').style.display = e.target.value === 'yes' ? 'block' : 'none';
 });
 
+if(new URLSearchParams(window.location.search).get('dev') === 'true'){ document.getElementById('dev-buttons').style.display = 'block'; }
+  
 document.getElementById('btn-fill-sample').onclick = () => {
   document.getElementById('f-name').value = 'Jamie';
   document.getElementById('f-city').value = 'Austin, TX';
