@@ -1434,8 +1434,12 @@ function buildAction(rec){
 function renderEmailScreen(){
   document.getElementById('email-week-label').textContent = 'Field note — week ' + state.week;
   document.getElementById('email-subject').textContent = 'This week for ' + state.answers.partnerName;
+  renderEventCountdown();
 
   const container = document.getElementById('rec-cards');
+
+
+  
   container.innerHTML = '';
   state.recommendations.forEach((rec, i) => {
     const meta = catMeta[rec.category] || catMeta.for;
