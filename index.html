@@ -1385,8 +1385,11 @@ function renderEventCountdown(){
     </p>
     <button class="btn" id="btn-occasion-ideas" style="font-size:12px;padding:10px 16px;">Get occasion ideas</button>
   `;
+
   const recCards = document.getElementById('rec-cards');
-  recCards.parentNode.insertBefore(panel, recCards);
+  recCards.parentNode.insertBefore(panel, recCards.nextSibling);
+
+  
   document.getElementById('btn-occasion-ideas').onclick = () => runOccasionIdeas(event);
 }
 
