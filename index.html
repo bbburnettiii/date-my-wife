@@ -430,8 +430,54 @@
     font-family:var(--font-mono); font-size:11px; color:var(--amber-deep);
     background:#FAEEDA; border-radius:4px; padding:10px 12px; margin:18px 0;
   }
-  .checkout-back{display:block; text-align:center; margin-top:16px; font-family:var(--font-mono); font-size:11px; color:var(--paper-muted); text-decoration:underline; cursor:pointer; background:none; border:none;}
+
+  
+.checkout-back{display:block; text-align:center; margin-top:16px; font-family:var(--font-mono); font-size:11px; color:var(--paper-muted); text-decoration:underline; cursor:pointer; background:none; border:none;}
+
+  /* ===== MOBILE ===== */
+  @media (max-width:480px){
+    body{ padding:20px 12px 60px; }
+    .m-nav{ padding:20px 0 36px; }
+    .m-nav-links{ display:none; }
+    .m-hero{ padding-bottom:50px; gap:28px; }
+    .m-hero h1{ font-size:28px; }
+    .m-hero p.m-sub{ font-size:15px; }
+    .m-hero-actions{ flex-direction:column; align-items:flex-start; gap:12px; }
+    .m-hero-actions .btn{ width:100%; text-align:center; }
+    .m-section{ padding:44px 0; }
+    .m-section h2{ font-size:24px; margin-bottom:24px; }
+    .m-steps{ gap:20px; }
+    .m-testimonials{ gap:14px; }
+    .m-quote p{ font-size:14px; }
+    .m-pricing{ max-width:100%; }
+    .m-price-card{ padding:22px 18px; }
+    .m-amount{ font-size:30px; }
+    .m-final-cta{ padding:50px 0 40px; }
+    .m-final-cta h2{ font-size:24px; }
+    .m-final-cta .btn{ width:100%; text-align:center; }
+    .checkout-wrap{ margin:24px auto; padding:0 4px; }
+    .checkout-card{ padding:24px 18px; }
+    .wrap{ padding:0; }
+    .masthead{ margin-bottom:24px; }
+    .masthead h1{ font-size:26px; }
+    .page{ padding:22px 16px 20px; border-radius:4px; }
+    .section{ margin-top:24px; }
+    textarea{ min-height:64px; font-size:16px; }
+    input[type=text], input[type=date], select{ font-size:16px; }
+    .btn{ padding:15px 20px; font-size:14px; width:100%; text-align:center; }
+    .btn-ghost{ width:auto; }
+    .btn-row{ flex-direction:column; }
+    .btn-row .btn{ width:100%; }
+    .submit-row{ justify-content:stretch; }
+    .submit-row .btn{ width:100%; }
+    .rec-card{ padding:16px 14px 14px; }
+    .rec-card h3{ font-size:17px; }
+    .calib-card{ padding:12px 14px; }
+    .chips{ gap:5px; }
+  }
 </style>
+
+  
 </head>
 <body>
 
